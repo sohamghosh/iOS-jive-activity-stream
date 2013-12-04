@@ -1,8 +1,10 @@
+#import "AppConstants.h"
 #import "ActivityTableViewController.h"
 #import "ProfileViewController.h"
 
 #import "AFHTTPRequestOperationManager.h"
 #import "UIImageView+AFNetworking.h"
+#import "CutomAFJSONResponseSerializer.h"
 
 @interface ActivityTableViewController ()
 
@@ -24,31 +26,31 @@
 {
     [super viewDidLoad];
     
-//    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
-//    [manager setRequestSerializer:[AFHTTPRequestSerializer serializer]];
-//    [manager setResponseSerializer:[AFJSONResponseSerializer serializerWithReadingOptions:NSJSONReadingAllowFragments]];
-//    
-//    [manager.requestSerializer setAuthorizationHeaderFieldWithUsername:@"sohamgh" password:@"Ywr#693>47f,q22g?:J>,uE"];
-//    NSString *url = @"https://my.thoughtworks.com/api/core/v3/activities";
-//    
-//    [manager.requestSerializer setAuthorizationHeaderFieldWithUsername:@"sohamgh@thoughtworks.com" password:@"jive321"];
-//    NSString *url = @"https://thoughtworks-prince.jiveon.com/api/core/v3/activities";
-//    
-//    [manager GET:url parameters:nil
-//     
-//         success:^(AFHTTPRequestOperation *operation, id responseObject) {
-//             self.activities = responseObject[@"list"];
-//             [self.tableView reloadData];
-//         }
-//     
-//         failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-//             NSLog(@"Error....\n%@", error);
-//         }];
+    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+    [manager setRequestSerializer:[AFHTTPRequestSerializer serializer]];
+    [manager setResponseSerializer:[CutomAFJSONResponseSerializer serializer]];
     
-    NSData* data = [NSData dataWithContentsOfURL:[NSURL URLWithString:@"file:///Users/Sohamgh/Sandbox/iOS/mytw-activity.json"]];
-    NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:nil];
-    self.activities = json[@"list"];
+    NSString *url;
     
+    if ([[[AppConstants alloc] init]useMyTW]) {
+        [manager.requestSerializer setAuthorizationHeaderFieldWithUsername:@"sohamgh" password:@"Ywr#693>47f,q22g?:J>,uE"];
+        url = @"https://my.thoughtworks.com/api/core/v3/activities";
+    
+    } else {
+        [manager.requestSerializer setAuthorizationHeaderFieldWithUsername:@"sohamgh@thoughtworks.com" password:@"93=:Yrf4gTn29<3KPs7qp,a"];
+        url = @"https://thoughtworks-prince.jiveon.com/api/core/v3/activities";
+    }
+    
+    [manager GET:url parameters:nil
+     
+         success:^(AFHTTPRequestOperation *operation, id response) {
+             self.activities = response[@"list"];
+             [self.tableView reloadData];
+         }
+     
+         failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+             NSLog(@"Error....\n%@", error);
+         }];
 }
 
 
@@ -77,6 +79,7 @@
     NSString *imageUrl = self.activities[indexPath.row][@"actor"][@"image"][@"url"];
     NSString *placeholderImage = @"Default";
 
+    NSLog(@"Image..... \n%@", imageUrl);    
     [cell.imageView setImageWithURL:[[NSURL alloc] initWithString:imageUrl] placeholderImage:[UIImage imageNamed:placeholderImage]];
     
     return cell;
@@ -85,6 +88,7 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     ProfileViewController *profileViewController = [[ProfileViewController alloc] init];
+    profileViewController.profileUrl = self.activities[indexPath.row][@"actor"][@"id"];
     [self.navigationController pushViewController:profileViewController animated:YES];
 }
 

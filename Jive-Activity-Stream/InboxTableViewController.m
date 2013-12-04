@@ -1,4 +1,9 @@
+#import "AppConstants.h"
 #import "InboxTableViewController.h"
+
+#import "AFHTTPRequestOperationManager.h"
+#import "UIImageView+AFNetworking.h"
+#import "CutomAFJSONResponseSerializer.h"
 
 @interface InboxTableViewController ()
 
@@ -19,6 +24,32 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+    [manager setRequestSerializer:[AFHTTPRequestSerializer serializer]];
+    [manager setResponseSerializer:[CutomAFJSONResponseSerializer serializer]];
+    
+    NSString *url;
+    
+    if ([[[AppConstants alloc] init]useMyTW]) {
+        [manager.requestSerializer setAuthorizationHeaderFieldWithUsername:@"sohamgh" password:@"Ywr#693>47f,q22g?:J>,uE"];
+        url = @"https://my.thoughtworks.com/api/core/v3/inbox";
+        
+    } else {
+        [manager.requestSerializer setAuthorizationHeaderFieldWithUsername:@"sohamgh@thoughtworks.com" password:@"93=:Yrf4gTn29<3KPs7qp,a"];
+        url = @"https://thoughtworks-prince.jiveon.com/api/core/v3/inbox";
+    }    
+    
+    [manager GET:url parameters:nil
+     
+         success:^(AFHTTPRequestOperation *operation, id response) {
+             self.messages = response[@"list"];
+             [self.tableView reloadData];
+         }
+     
+         failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+             NSLog(@"Error....\n%@", error);
+         }];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -28,7 +59,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return 5; //todo
+    return self.messages.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -40,9 +71,18 @@
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellIdentifier];
     }
     
-    cell.textLabel.text = @"Mail";
-    cell.detailTextLabel.text = @"Message";
-    [cell.imageView setImage:[UIImage imageNamed:@"Default"]];
+    cell.textLabel.text = self.messages[indexPath.row][@"object"][@"displayName"];
+    
+    NSString *publishedDateStr = self.messages[indexPath.row][@"object"][@"published"];
+    
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    [formatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSSZ"];
+    NSDate *publishedDate = [formatter dateFromString:publishedDateStr];
+    
+    [formatter setDateFormat:@"dd MMM yyyy"];
+    NSString *detail = [formatter stringFromDate:publishedDate];
+    
+    cell.detailTextLabel.text = [NSString stringWithFormat:@"Published on %@", detail];
     
     return cell;
 }
