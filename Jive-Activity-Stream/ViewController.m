@@ -1,11 +1,3 @@
-//
-//  ViewController.m
-//  Jive-Activity-Stream
-//
-//  Created by Soham on 04/12/13.
-//  Copyright (c) 2013 TW. All rights reserved.
-//
-
 #import "ViewController.h"
 
 @interface ViewController ()
