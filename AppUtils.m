@@ -18,10 +18,10 @@
     [manager setResponseSerializer:[CutomAFJSONResponseSerializer serializer]];
     
     if (_useMyTW) {
-        [manager.requestSerializer setAuthorizationHeaderFieldWithUsername:@"sohamgh" password:@"Ywr#693>47f,q22g?:J>,uE"];
+        [manager.requestSerializer setAuthorizationHeaderFieldWithUsername:@"username" password:@"password"];
         
     } else {
-        [manager.requestSerializer setAuthorizationHeaderFieldWithUsername:@"sohamgh@thoughtworks.com" password:@"93=:Yrf4gTn29<3KPs7qp,a"];
+        [manager.requestSerializer setAuthorizationHeaderFieldWithUsername:@"username" password:@"password"];
     }
     
     return manager;
