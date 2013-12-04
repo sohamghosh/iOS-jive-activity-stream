@@ -1,4 +1,4 @@
-#import "AppConstants.h"
+#import "AppUtils.h"
 #import "ProfileViewController.h"
 
 #import "AFHTTPRequestOperationManager.h"
@@ -24,21 +24,11 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.view.backgroundColor = [UIColor whiteColor];
+    self.view.backgroundColor = [UIColor whiteColor];    
     
-    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
-    [manager setRequestSerializer:[AFHTTPRequestSerializer serializer]];
-    [manager setResponseSerializer:[CutomAFJSONResponseSerializer serializer]];
+    AFHTTPRequestOperationManager *manager = [[[AppUtils alloc] init] configureOpManager];        
     
-    if ([[[AppConstants alloc] init]useMyTW]) {
-        [manager.requestSerializer setAuthorizationHeaderFieldWithUsername:@"sohamgh" password:@"Ywr#693>47f,q22g?:J>,uE"];
-    } else {
-        [manager.requestSerializer setAuthorizationHeaderFieldWithUsername:@"sohamgh@thoughtworks.com" password:@"93=:Yrf4gTn29<3KPs7qp,a"];
-    }
-    
-    NSString *url = self.profileUrl;
-    
-    [manager GET:url parameters:nil
+    [manager GET:self.profileUrl parameters:nil
      
          success:^(AFHTTPRequestOperation *operation, id response) {
              self.profile = response;

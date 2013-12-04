@@ -1,10 +1,9 @@
-#import "AppConstants.h"
+#import "AppUtils.h"
 #import "ActivityTableViewController.h"
 #import "ProfileViewController.h"
 
 #import "AFHTTPRequestOperationManager.h"
 #import "UIImageView+AFNetworking.h"
-#import "CutomAFJSONResponseSerializer.h"
 
 @interface ActivityTableViewController ()
 
@@ -26,22 +25,11 @@
 {
     [super viewDidLoad];
     
-    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
-    [manager setRequestSerializer:[AFHTTPRequestSerializer serializer]];
-    [manager setResponseSerializer:[CutomAFJSONResponseSerializer serializer]];
+    AppUtils *appUtils = [[AppUtils alloc] init];
     
-    NSString *url;
-    
-    if ([[[AppConstants alloc] init]useMyTW]) {
-        [manager.requestSerializer setAuthorizationHeaderFieldWithUsername:@"sohamgh" password:@"Ywr#693>47f,q22g?:J>,uE"];
-        url = @"https://my.thoughtworks.com/api/core/v3/activities";
-    
-    } else {
-        [manager.requestSerializer setAuthorizationHeaderFieldWithUsername:@"sohamgh@thoughtworks.com" password:@"93=:Yrf4gTn29<3KPs7qp,a"];
-        url = @"https://thoughtworks-prince.jiveon.com/api/core/v3/activities";
-    }
-    
-    [manager GET:url parameters:nil
+    AFHTTPRequestOperationManager *manager = [appUtils configureOpManager];
+
+    [manager GET:[appUtils getUrl:@"activities"] parameters:nil
      
          success:^(AFHTTPRequestOperation *operation, id response) {
              self.activities = response[@"list"];
