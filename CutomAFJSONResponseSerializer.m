@@ -11,6 +11,12 @@
     NSData *newData = [newDataStr dataUsingEncoding:NSUTF8StringEncoding];
     
     return ([super responseObjectForResponse:response data:newData error:error]);
-}
+    
+    
+//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(somemethod:) name:@"someevent" object:nil];
+//    
+//    [[NSNotificationCenter defaultCenter] postNotificationName:@"someevent" object:nil];
+ 
 
+}
 @end
